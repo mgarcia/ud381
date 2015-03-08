@@ -353,10 +353,10 @@ public class TweetTopology {
 
     // now create the tweet spout with the credentials
     TweetSpout tweetSpout = new TweetSpout(
-        //"[Your customer key]",
-        //"[Your secret key]",
-        //"[Your access token]",
-        //"[Your access secret]"
+        "xxxx",
+        "xxxx",
+        "xxxx",
+        "xxxx"
     );
 
     // attach the tweet spout to the topology - parallelism of 1
@@ -365,8 +365,11 @@ public class TweetTopology {
     //*********************************************************************
     // Complete the Topology.
     // Part 1: // attach the parse tweet bolt, parallelism of 10 (what grouping is needed?)
+    builder.setBolt("parse-tweet-bolt", new ParseTweetBolt(), 10).shuffleGrouping("tweet-spout");
     // Part 2: // attach the count bolt, parallelism of 15 (what grouping is needed?)
+    builder.setBolt("count-bolt", new CountBolt(), 15).fieldsGrouping("parse-tweet-bolt",new Fields("tweet-word"));
     // Part 3: attach the report bolt, parallelism of 1 (what grouping is needed?)
+    builder.setBolt("report-bolt", new ReportBolt(), 1).globalGrouping("count-bolt");
     // Submit and run the topology.
 
 
